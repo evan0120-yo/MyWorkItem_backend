@@ -1,0 +1,7 @@
+bin/
+obj/
+MyWorkItem.Tests/bin/
+MyWorkItem.Tests/obj/
+*.user
+*.suo
+.vs/
