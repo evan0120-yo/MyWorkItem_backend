@@ -50,7 +50,7 @@
 ## 測試專案結構
 
 ```text
-Backend/MyWorkItem.Api.Tests
+Backend/MyWorkItem.Tests
 ├─ FlowTests
 │  ├─ WorkItems
 │  └─ AdminWorkItems
@@ -284,5 +284,5 @@ Backend/MyWorkItem.Api.Tests
 ## 待確認但不阻塞本版
 
 - 分頁若之後納入需求，需補 list 相關測試。
-- 若 delete 最終改為 soft delete，需補刪除後資料可見性測試。
+- 若 delete 從目前的 hard delete 改為 soft delete，需補刪除後資料可見性測試。
 - 若 auth 從 mock 改為 JWT，需補 auth provider 與 claims mapping 測試。

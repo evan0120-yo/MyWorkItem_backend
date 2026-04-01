@@ -24,13 +24,16 @@
 ## 本版實作基線
 
 - Phase 1 使用 mock 使用者識別與 mock 角色。
+- Phase 1 的 mock 身分資訊由 request headers 提供：
+  - `X-Mock-User-Id`
+  - `X-Mock-User-Name`
+  - `X-Mock-Role`
 - 角色分成：
   - `User`
   - `Admin`
 - Work Item 主資料與使用者個人確認狀態分開保存。
 - 詳情頁 `status` 先採「目前使用者的個人確認狀態」解讀。
-- 刪除 Work Item 的內部保存策略暫不寫死，但外部可觀察行為先定義為：
-  - 刪除成功後，該 Work Item 不可再被列表與詳情查到。
+- 刪除 Work Item 目前採 hard delete。
 - 本版先不把分頁寫進後端行為定義。
 
 ## 名詞定義
@@ -333,11 +336,10 @@ Then
 ```
 
 - 錯誤回應格式需一致。
-- Controller 負責把應用層錯誤轉成 HTTP 回應。
+- 例外統一由 middleware 轉成 HTTP 回應。
 
 ## 待確認但不阻塞本版
 
 - admin 是否一定要有獨立 UI，不影響後端先提供 admin API。
 - 分頁是否為必做，本版先不寫進 API 行為。
-- 刪除是 hard delete 或 soft delete，內部策略待定。
 - detail `status` 是否百分之百等於個人狀態，若之後決策不同需回修本文件。

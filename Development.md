@@ -128,7 +128,10 @@ Backend
 │  ├─ appsettings.Development.json
 │  └─ MyWorkItem.Api.csproj
 ├─ MyWorkItem.Tests
-│  └─ FlowTests
+│  ├─ FlowTests
+│  ├─ ServiceTests
+│  ├─ AuthTests
+│  └─ TestSupport
 └─ MyWorkItem.sln
 ```
 
@@ -288,10 +291,10 @@ UserWorkItemStatuses
 └─ UpdatedAt
 ```
 
-- `待確認`
-  - Work Item Detail 顯示的 Status 是否為使用者個人狀態
-  - 刪除 Work Item 時是否需要 soft delete
-  - 刪除後 UserWorkItemStatuses 如何處理
+- `已確認`
+  - Work Item Detail 顯示的 Status 目前以使用者個人狀態回傳
+  - 刪除策略目前為 hard delete
+  - 刪除後 UserWorkItemStatuses 由資料庫關聯一併刪除
 
 ## API 邊界
 
@@ -315,7 +318,7 @@ UserWorkItemStatuses
   - 目標是先完成主要功能流程
 - `AI 推估 / 待覆核`
   - Mock 權限先放在 `Auth` 區塊
-  - Mock 權限可由 request header / query / mock selector 傳入 user identity
+  - Mock 權限目前由 request header 傳入 user identity
   - admin 與 user 角色先用 mock role 區分
   - Phase 2 若補 JWT，優先沿用同一組 current user abstraction
   - UseCase 不直接碰 token 字串或 claims parsing
@@ -343,7 +346,7 @@ UserWorkItemStatuses
   - 刪除失敗需顯示錯誤提示
 - `AI 推估 / 待覆核`
   - UseCase / Service 層統一做輸入驗證
-  - Controller 層統一轉成 HTTP response
+  - middleware 統一轉成 HTTP response
   - 用 ProblemDetails 或一致錯誤格式回傳
 
 ## 測試方向
@@ -366,9 +369,7 @@ UserWorkItemStatuses
 ## 待確認
 
 - admin 是否一定要有 UI
-- 詳情頁 Status 的定義
 - 分頁是否必做
-- 刪除策略 hard delete / soft delete
 - 第 8 頁 Relational Database 是否只是示意
 
 ## 開發模式

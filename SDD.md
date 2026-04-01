@@ -77,7 +77,10 @@ Backend
 │  ├─ appsettings.Development.json
 │  └─ MyWorkItem.Api.csproj
 ├─ MyWorkItem.Tests
-│  └─ FlowTests
+│  ├─ FlowTests
+│  ├─ ServiceTests
+│  ├─ AuthTests
+│  └─ TestSupport
 └─ MyWorkItem.sln
 ```
 
@@ -325,6 +328,7 @@ Users 1 --- n UserWorkItemStatuses n --- 1 WorkItems
   - id
   - title
   - description
+  - createdAt
   - updatedAt
 ```
 
@@ -375,6 +379,7 @@ Users 1 --- n UserWorkItemStatuses n --- 1 WorkItems
 ├─ 解析目前使用者
 ├─ 讀取 request 內所有 Work Item
 ├─ 若有缺漏 -> not found
+├─ 確保目前使用者在資料庫有對應主資料
 ├─ 建立或更新目前使用者的 Confirmed 狀態
 ├─ 寫回資料
 └─ 回傳成功結果
@@ -446,7 +451,7 @@ UnexpectedException
   -> 500
 ```
 
-- Controller 層負責把應用層錯誤轉成 HTTP response。
+- 例外由 middleware 統一轉成 HTTP response。
 - 回應格式需一致。
 
 ## Auth 設計
@@ -455,13 +460,17 @@ UnexpectedException
 
 ```text
 Request
-  -> Mock auth provider
+  -> Header-based mock auth provider
     -> 解析目前 userId / role
       -> 提供給 UseCase / Service 使用
 ```
 
 - 本版只要求目前使用者抽象可用。
 - 不要求正式登入。
+- Phase 1 目前從以下 headers 讀取：
+  - `X-Mock-User-Id`
+  - `X-Mock-User-Name`
+  - `X-Mock-Role`
 
 ### Phase 2
 
@@ -488,5 +497,3 @@ Request
 - 分頁是否為必做。
 - admin 是否一定要配 UI。
 - detail `status` 是否最終仍採個人狀態。
-- delete 最終要採 hard delete 或 soft delete。
-- mock auth 最終要從 header、query 或其他來源讀取。

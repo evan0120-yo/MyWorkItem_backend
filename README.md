@@ -11,7 +11,11 @@
 - Solution：Backend/MyWorkItem.sln
 - API 專案：Backend/MyWorkItem.Api/MyWorkItem.Api.csproj
 - 測試專案：Backend/MyWorkItem.Tests/MyWorkItem.Tests.csproj
-- 目前只建立專案結構與啟動設定，尚未開始實作業務流程
+- 已完成：
+  - mock auth
+  - Work Item user flows
+  - admin CRUD
+  - UseCase flow tests
 
 ## 目前專案方向
 
@@ -21,7 +25,7 @@
 - Swagger
 - EF Core
 - PostgreSQL
-- 測試專案已先建立
+- mock auth 由 request headers 提供
 
 ## 專案資料夾
 
@@ -53,7 +57,10 @@ Backend
 │  ├─ appsettings.Development.json
 │  └─ MyWorkItem.Api.csproj
 └─ MyWorkItem.Tests
-   └─ FlowTests
+   ├─ FlowTests
+   ├─ ServiceTests
+   ├─ AuthTests
+   └─ TestSupport
 ```
 
 ## 命名補充
@@ -79,6 +86,31 @@ Password=sky77619
 ```
 
 如果你本機資料庫名稱不同，只要改 `Database` 即可。
+
+## Phase 1 mock auth headers
+
+目前 API 會從 request headers 讀取目前使用者資訊：
+
+```text
+X-Mock-User-Id
+X-Mock-User-Name
+X-Mock-Role
+```
+
+角色目前支援：
+
+```text
+User
+Admin
+```
+
+範例：
+
+```text
+X-Mock-User-Id: user-1
+X-Mock-User-Name: user-1
+X-Mock-Role: User
+```
 
 ## 啟動前準備
 
@@ -114,8 +146,6 @@ dotnet run --project .\MyWorkItem.Api\MyWorkItem.Api.csproj
 - http://localhost:5032/swagger
 - https://localhost:7119/swagger
 
-目前因為尚未開始實作 DbContext 與 migration，API 專案本身先不依賴資料表。
-
 ## 測試方式
 
 ```powershell
@@ -123,10 +153,14 @@ cd Backend
 dotnet test .\MyWorkItem.sln
 ```
 
-目前測試專案只有專案結構與參考關係，尚未加入流程測試內容。
+目前已加入 35 個測試，包含：
+
+- UseCase flow tests
+- Auth tests
+- Service tests
 
 ## 下一步建議
 
-- 先補 BDD / SDD / TDD 文件
-- 再依流程逐條落實 UseCase / Service / Repository
-- 每完成一條流程，就補上對應流程測試
+- 接著補 migration 與資料初始化策略
+- 補 controller / API 層級整合測試
+- 若要進入 Phase 2，再補 JWT 與正式授權
