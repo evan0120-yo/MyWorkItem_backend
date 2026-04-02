@@ -8,7 +8,7 @@ public sealed class CurrentUserService(ICurrentUserAccessor currentUserAccessor)
     public Task<CurrentUser> GetRequiredCurrentUserAsync(CancellationToken cancellationToken)
     {
         var currentUser = currentUserAccessor.GetCurrentUser()
-            ?? throw new AppUnauthorizedException("Current user could not be resolved.");
+            ?? throw new AppUnauthorizedException("無法解析目前使用者。");
 
         return Task.FromResult(currentUser);
     }
@@ -19,7 +19,7 @@ public sealed class CurrentUserService(ICurrentUserAccessor currentUserAccessor)
 
         if (currentUser.Role != AppRole.Admin)
         {
-            throw new AppForbiddenException("Current user does not have admin permission.");
+            throw new AppForbiddenException("目前使用者沒有管理員權限。");
         }
 
         return currentUser;

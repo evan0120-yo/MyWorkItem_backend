@@ -14,22 +14,22 @@ public sealed class UpdateWorkItemRequestValidator
 
         if (string.IsNullOrWhiteSpace(request.Title))
         {
-            errors["title"] = ["title is required."];
+            errors["title"] = ["請輸入標題。"];
         }
         else if (request.Title.Trim().Length > TitleMaxLength)
         {
-            errors["title"] = [$"title must be {TitleMaxLength} characters or fewer."];
+            errors["title"] = [$"標題長度不可超過 {TitleMaxLength} 個字元。"];
         }
 
         if ((request.Description?.Trim().Length ?? 0) > DescriptionMaxLength)
         {
             errors["description"] =
-                [$"description must be {DescriptionMaxLength} characters or fewer."];
+                [$"描述長度不可超過 {DescriptionMaxLength} 個字元。"];
         }
 
         if (errors.Count > 0)
         {
-            throw new AppValidationException("Update work item request is invalid.", errors);
+            throw new AppValidationException("更新工作項目請求資料無效。", errors);
         }
     }
 }

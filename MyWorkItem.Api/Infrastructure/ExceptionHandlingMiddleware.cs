@@ -41,7 +41,7 @@ public sealed class ExceptionHandlingMiddleware(
                 await WriteProblemAsync(
                     context,
                     StatusCodes.Status500InternalServerError,
-                    "An unexpected error occurred.");
+                    "發生未預期的錯誤。");
                 return;
         }
     }
@@ -56,7 +56,7 @@ public sealed class ExceptionHandlingMiddleware(
             exception.Errors.ToDictionary(entry => entry.Key, entry => entry.Value))
         {
             Status = StatusCodes.Status400BadRequest,
-            Title = "Validation failed.",
+            Title = "驗證失敗。",
             Detail = exception.Message,
             Instance = context.Request.Path,
         };
@@ -74,7 +74,7 @@ public sealed class ExceptionHandlingMiddleware(
         var problemDetails = new ProblemDetails
         {
             Status = statusCode,
-            Title = "Request failed.",
+            Title = "請求失敗。",
             Detail = detail,
             Instance = context.Request.Path,
         };

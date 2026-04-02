@@ -25,7 +25,7 @@ public sealed class ExceptionHandlingMiddlewareTests
 
         Assert.Equal(StatusCodes.Status500InternalServerError, context.Response.StatusCode);
         Assert.Equal(500, root.GetProperty("status").GetInt32());
-        Assert.Equal("Request failed.", root.GetProperty("title").GetString());
-        Assert.Equal("An unexpected error occurred.", root.GetProperty("detail").GetString());
+        Assert.Equal("請求失敗。", root.GetProperty("title").GetString());
+        Assert.Equal("發生未預期的錯誤。", root.GetProperty("detail").GetString());
     }
 }

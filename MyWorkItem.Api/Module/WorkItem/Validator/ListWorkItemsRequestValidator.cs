@@ -17,10 +17,10 @@ public sealed class ListWorkItemsRequestValidator
             "asc" => WorkItemSortDirection.Asc,
             "desc" => WorkItemSortDirection.Desc,
             _ => throw new AppValidationException(
-                "List work items request is invalid.",
+                "查詢工作項目清單的請求資料無效。",
                 new Dictionary<string, string[]>
                 {
-                    ["sortDirection"] = ["sortDirection must be 'asc' or 'desc'."],
+                    ["sortDirection"] = ["sortDirection 只能是 'asc' 或 'desc'。"],
                 }),
         };
     }

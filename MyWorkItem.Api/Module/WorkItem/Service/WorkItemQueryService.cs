@@ -43,7 +43,7 @@ public sealed class WorkItemQueryService(
         CancellationToken cancellationToken)
     {
         var workItem = await workItemRepository.GetByIdAsync(workItemId, asTracking: false, cancellationToken)
-            ?? throw new AppNotFoundException($"Work item '{workItemId}' was not found.");
+            ?? throw new AppNotFoundException($"找不到工作項目 '{workItemId}'。");
 
         var userStatus = await userWorkItemStatusRepository.GetByUserAndWorkItemIdAsync(
             userId,

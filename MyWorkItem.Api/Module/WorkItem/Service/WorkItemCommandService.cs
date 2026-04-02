@@ -33,7 +33,7 @@ public sealed class WorkItemCommandService(IWorkItemRepository workItemRepositor
         CancellationToken cancellationToken)
     {
         var workItem = await workItemRepository.GetByIdAsync(workItemId, asTracking: true, cancellationToken)
-            ?? throw new AppNotFoundException($"Work item '{workItemId}' was not found.");
+            ?? throw new AppNotFoundException($"找不到工作項目 '{workItemId}'。");
 
         workItem.Title = request.Title!.Trim();
         workItem.Description = request.Description?.Trim() ?? string.Empty;
@@ -47,7 +47,7 @@ public sealed class WorkItemCommandService(IWorkItemRepository workItemRepositor
     public async Task DeleteAsync(Guid workItemId, CancellationToken cancellationToken)
     {
         var workItem = await workItemRepository.GetByIdAsync(workItemId, asTracking: true, cancellationToken)
-            ?? throw new AppNotFoundException($"Work item '{workItemId}' was not found.");
+            ?? throw new AppNotFoundException($"找不到工作項目 '{workItemId}'。");
 
         workItemRepository.Remove(workItem);
         await workItemRepository.SaveChangesAsync(cancellationToken);

@@ -10,20 +10,20 @@ public sealed class ConfirmWorkItemsRequestValidator
         if (request.WorkItemIds is null)
         {
             throw new AppValidationException(
-                "Confirm work items request is invalid.",
+                "確認工作項目請求資料無效。",
                 new Dictionary<string, string[]>
                 {
-                    ["workItemIds"] = ["workItemIds is required."],
+                    ["workItemIds"] = ["workItemIds 為必填。"],
                 });
         }
 
         if (request.WorkItemIds.Any(x => x == Guid.Empty))
         {
             throw new AppValidationException(
-                "Confirm work items request is invalid.",
+                "確認工作項目請求資料無效。",
                 new Dictionary<string, string[]>
                 {
-                    ["workItemIds"] = ["workItemIds must not contain empty ids."],
+                    ["workItemIds"] = ["workItemIds 不可包含空白識別碼。"],
                 });
         }
 
@@ -34,10 +34,10 @@ public sealed class ConfirmWorkItemsRequestValidator
         if (workItemIds.Count == 0)
         {
             throw new AppValidationException(
-                "Confirm work items request is invalid.",
+                "確認工作項目請求資料無效。",
                 new Dictionary<string, string[]>
                 {
-                    ["workItemIds"] = ["workItemIds must contain at least one valid id."],
+                    ["workItemIds"] = ["workItemIds 至少要有一筆有效識別碼。"],
                 });
         }
 

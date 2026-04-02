@@ -20,7 +20,7 @@ public sealed class WorkItemStatusService(
 
         if (workItems.Count != workItemIds.Count)
         {
-            throw new AppNotFoundException("One or more work items were not found.");
+            throw new AppNotFoundException("一筆或多筆工作項目不存在。");
         }
 
         await EnsureUserRecordAsync(currentUser, cancellationToken);
@@ -77,7 +77,7 @@ public sealed class WorkItemStatusService(
 
         if (workItem is null)
         {
-            throw new AppNotFoundException($"Work item '{workItemId}' was not found.");
+            throw new AppNotFoundException($"找不到工作項目 '{workItemId}'。");
         }
 
         var existingStatus = await userWorkItemStatusRepository.GetByUserAndWorkItemIdAsync(
