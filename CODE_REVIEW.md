@@ -26,7 +26,7 @@
 
 ### 1. 啟動與身分
 
-這個 API 啟動後，會把 DbContext、Repository、Service、UseCase 接起來，然後直接連 PostgreSQL。
+這個 API 啟動後，會把 DbContext、Repository、Service、UseCase 接起來，直接連 PostgreSQL，並且開一條給本機前端聯調用的 CORS policy。
 
 目前沒有正式登入。每次 request 直接從 header 讀使用者資訊：
 
@@ -43,6 +43,8 @@ Request
 > 注意: 這不是 token auth，也沒有 session。
 
 > 注意: `Users` 表目前不是完整帳號系統。它主要是為了個人狀態關聯存在，而且只有 confirm 流程會主動補或更新 user record。
+
+> 注意: CORS 目前只放行本機前端開發來源 `http://localhost:5173` / `http://127.0.0.1:5173`。這是因為前端 request 會帶 `X-Mock-*` headers，瀏覽器一定會先做 preflight。
 
 ### 2. 前台查詢
 
@@ -120,7 +122,7 @@ Request
 
 > 注意: confirm 是整批全有或全無，沒有部分成功。
 
-> 注意: confirm 目前會先補 user record，再寫 status，這兩段不是 transaction 包在一起。
+> 注意: confirm 目前會把 user upsert 與 status 寫入收斂到同一次 `SaveChanges`；在 PostgreSQL 這會落在同一個 EF Core transaction 內，但仍未補 provider-level integration tests 去驗證真正的 transaction 行為。
 
 ### 4. 管理端 CRUD
 
@@ -140,7 +142,7 @@ admin API
     └─ delete -> 找目標 -> hard delete
 ```
 
-> 注意: create / update 目前都回 `200 OK`，create 不是 `201 Created`。
+> 注意: create 現在回 `201 Created`，`Location` 會指向 `/api/work-items/{id}`；update 維持 `200 OK`。
 
 > 注意: delete 目前是真刪除。刪掉後，列表和詳情都不會再查到；關聯的 `UserWorkItemStatuses` 也會 cascade delete。
 
@@ -310,7 +312,7 @@ WorkItemsController.ConfirmAsync
         -> WorkItemRepository.GetByIdsAsync
         -> EnsureUserRecordAsync
            -> UserRepository.GetByIdAsync
-           -> UserRepository.AddAsync / SaveChangesAsync
+           -> UserRepository.AddAsync
         -> UserWorkItemStatusRepository.GetByUserAndWorkItemIdsAsync(asTracking: true)
         -> UserWorkItemStatusRepository.AddRangeAsync
         -> UserWorkItemStatusRepository.SaveChangesAsync
@@ -357,7 +359,7 @@ AdminWorkItemsController.CreateAsync
 ```
 
 目前狀態碼：
-- `200 OK`
+- `201 Created`
 
 #### 4.2 update API
 
@@ -449,12 +451,15 @@ middleware 最後會回兩種格式：
 - UseCase flow tests
 - Service tests
 - Auth tests
+- 上述測試目前都透過 `TestDependencyFactory + EF Core InMemory provider` 執行
 
 目前限制：
 - 沒有正式 JWT / token auth
 - 沒有 pagination / search / filter
 - 沒有 admin list API
 - 沒有 migration 檔，只有 `EnsureCreated`
-- create / update 目前都回 `200`
-- confirm 的 user upsert 與 status 寫入不是 transaction
+- 目前沒有 PostgreSQL integration tests，所以 Npgsql / SQL translation / FK / transaction 行為還沒被自動測試覆蓋
+- create validator / update validator 現在已對齊 DB 長度限制：`Title <= 200`、`Description <= 2000`
+- create 目前回 `201 Created`
+- confirm 已收斂成同一次 `SaveChanges`，但尚未有 PostgreSQL integration test 去驗證 transaction 邊界
 - `DisplayName` 目前沒有獨立來源

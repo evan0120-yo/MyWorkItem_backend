@@ -8,6 +8,12 @@ using MyWorkItem.Api.Module.WorkItem.Usecase;
 using MyWorkItem.Api.Module.WorkItem.Validator;
 
 var builder = WebApplication.CreateBuilder(args);
+const string FrontendDevCorsPolicyName = "FrontendDev";
+string[] frontendDevOrigins =
+[
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+];
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -17,6 +23,15 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(FrontendDevCorsPolicyName, policy =>
+    {
+        policy.WithOrigins(frontendDevOrigins)
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 builder.Services.AddDbContext<MyWorkItemDbContext>(options =>
 {
@@ -61,6 +76,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(FrontendDevCorsPolicyName);
 app.UseAuthorization();
 app.MapControllers();
 

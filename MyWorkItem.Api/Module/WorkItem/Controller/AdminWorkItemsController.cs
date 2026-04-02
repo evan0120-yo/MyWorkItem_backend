@@ -17,7 +17,7 @@ public sealed class AdminWorkItemsController(
         CancellationToken cancellationToken)
     {
         var response = await createWorkItemUseCase.ExecuteAsync(request, cancellationToken);
-        return Ok(response);
+        return Created($"/api/work-items/{response.Id}", response);
     }
 
     [HttpPut("{id:guid}")]

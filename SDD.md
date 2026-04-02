@@ -427,6 +427,10 @@ UseCase / Service
 - `title`
   - 不可為空
   - 不可全空白
+- `title`
+  - trim 後不可超過 200
+- `description`
+  - trim 後不可超過 2000
 - `confirm request`
   - workItemIds 不可為空
 - `update / delete / detail`

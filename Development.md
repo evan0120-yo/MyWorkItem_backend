@@ -40,6 +40,13 @@
   - 不先把時間花在完整 auth framework 上
 - PostgreSQL 在此專案中只是穩定可用的持久層，不是要展示資料庫花樣。
 - 測試我會優先壓在 UseCase 層，因為那裡最接近實際流程，也最符合你要的維護方式。
+- 測試我會先分兩層：
+  - 第一層用 EF Core InMemory provider 保住 UseCase / Service / Auth 的快速回饋
+  - 第二層再補 PostgreSQL integration tests，驗證 Npgsql / SQL translation / transaction 等 provider-specific 行為
+- 前後端本機聯調會是跨 origin：
+  - Frontend 在 `http://localhost:5173`
+  - Backend 在 `http://localhost:5032`
+  - 而且 request 會帶 `X-Mock-*` headers，所以 API 端必須補 dev CORS policy
 - 如果沒有新的決策，我會自然朝這個方向寫：
   - `Controller -> UseCase -> Service -> Repository`
   - `EF Core + PostgreSQL`
@@ -72,6 +79,7 @@
   - Phase 1：Mock 權限 / user switcher
   - Phase 2：若有時間，再補 JWT
   - 測試方向：先做後端流程測試
+  - 測試實作：FlowTests / ServiceTests / AuthTests 先用 InMemory provider；PostgreSQL integration tests 後補
 
 ## 架構原則
 

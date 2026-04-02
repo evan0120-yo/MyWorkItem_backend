@@ -54,6 +54,38 @@ public sealed class WorkItemStatusServiceTests
     }
 
     [Fact]
+    public async Task ConfirmAsync_WhenUserDoesNotExist_CreatesUserAndStatusesInOneCall()
+    {
+        await using var dbContext = TestDependencyFactory.CreateDbContext();
+
+        var workItemId = Guid.NewGuid();
+
+        dbContext.WorkItems.Add(
+            new WorkItemEntity
+            {
+                Id = workItemId,
+                Title = "Work Item 1",
+                Description = "Description 1",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            });
+
+        await dbContext.SaveChangesAsync();
+
+        var service = TestDependencyFactory.CreateWorkItemStatusService(dbContext);
+
+        await service.ConfirmAsync(
+            [workItemId],
+            new CurrentUser("user-1", "user-1", "User One", AppRole.User),
+            CancellationToken.None);
+
+        Assert.Single(dbContext.Users);
+        Assert.Single(dbContext.UserWorkItemStatuses);
+        Assert.Equal("user-1", dbContext.Users.Single().Id);
+        Assert.Equal("user-1", dbContext.UserWorkItemStatuses.Single().UserId);
+    }
+
+    [Fact]
     public async Task RevertAsync_WhenOtherUserHasStatus_OnlyCurrentUserBecomesPending()
     {
         await using var dbContext = TestDependencyFactory.CreateDbContext();

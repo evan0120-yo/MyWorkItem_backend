@@ -114,28 +114,17 @@ public sealed class WorkItemStatusService(
                     DisplayName = currentUser.DisplayName,
                 },
                 cancellationToken);
-
-            await userRepository.SaveChangesAsync(cancellationToken);
             return;
         }
-
-        var shouldSave = false;
 
         if (persistedUser.UserName != currentUser.UserName)
         {
             persistedUser.UserName = currentUser.UserName;
-            shouldSave = true;
         }
 
         if (persistedUser.DisplayName != currentUser.DisplayName)
         {
             persistedUser.DisplayName = currentUser.DisplayName;
-            shouldSave = true;
-        }
-
-        if (shouldSave)
-        {
-            await userRepository.SaveChangesAsync(cancellationToken);
         }
     }
 }

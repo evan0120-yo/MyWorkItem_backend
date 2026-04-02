@@ -58,6 +58,52 @@ public sealed class CreateWorkItemUseCaseTests
     }
 
     [Fact]
+    public async Task CreateWorkItem_WhenTitleExceedsMaxLength_ThrowsValidation()
+    {
+        await using var dbContext = TestDependencyFactory.CreateDbContext();
+
+        var useCase = new CreateWorkItemUseCase(
+            TestDependencyFactory.CreateCurrentUserService(
+                dbContext,
+                new CurrentUser("admin-1", "admin-1", "Admin One", AppRole.Admin)),
+            new CreateWorkItemRequestValidator(),
+            TestDependencyFactory.CreateWorkItemCommandService(dbContext));
+
+        var action = async () => await useCase.ExecuteAsync(
+            new CreateWorkItemRequest
+            {
+                Title = new string('A', 201),
+                Description = "Description 1",
+            },
+            CancellationToken.None);
+
+        await Assert.ThrowsAsync<AppValidationException>(action);
+    }
+
+    [Fact]
+    public async Task CreateWorkItem_WhenDescriptionExceedsMaxLength_ThrowsValidation()
+    {
+        await using var dbContext = TestDependencyFactory.CreateDbContext();
+
+        var useCase = new CreateWorkItemUseCase(
+            TestDependencyFactory.CreateCurrentUserService(
+                dbContext,
+                new CurrentUser("admin-1", "admin-1", "Admin One", AppRole.Admin)),
+            new CreateWorkItemRequestValidator(),
+            TestDependencyFactory.CreateWorkItemCommandService(dbContext));
+
+        var action = async () => await useCase.ExecuteAsync(
+            new CreateWorkItemRequest
+            {
+                Title = "Work Item 1",
+                Description = new string('D', 2001),
+            },
+            CancellationToken.None);
+
+        await Assert.ThrowsAsync<AppValidationException>(action);
+    }
+
+    [Fact]
     public async Task CreateWorkItem_WhenCallerIsUser_ThrowsForbidden()
     {
         await using var dbContext = TestDependencyFactory.CreateDbContext();

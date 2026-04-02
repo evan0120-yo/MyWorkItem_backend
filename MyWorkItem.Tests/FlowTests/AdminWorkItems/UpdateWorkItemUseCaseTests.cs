@@ -75,6 +75,54 @@ public sealed class UpdateWorkItemUseCaseTests
     }
 
     [Fact]
+    public async Task UpdateWorkItem_WhenTitleExceedsMaxLength_ThrowsValidation()
+    {
+        await using var dbContext = TestDependencyFactory.CreateDbContext();
+
+        var useCase = new UpdateWorkItemUseCase(
+            TestDependencyFactory.CreateCurrentUserService(
+                dbContext,
+                new CurrentUser("admin-1", "admin-1", "Admin One", AppRole.Admin)),
+            new UpdateWorkItemRequestValidator(),
+            TestDependencyFactory.CreateWorkItemCommandService(dbContext));
+
+        var action = async () => await useCase.ExecuteAsync(
+            Guid.NewGuid(),
+            new UpdateWorkItemRequest
+            {
+                Title = new string('T', 201),
+                Description = "Description",
+            },
+            CancellationToken.None);
+
+        await Assert.ThrowsAsync<AppValidationException>(action);
+    }
+
+    [Fact]
+    public async Task UpdateWorkItem_WhenDescriptionExceedsMaxLength_ThrowsValidation()
+    {
+        await using var dbContext = TestDependencyFactory.CreateDbContext();
+
+        var useCase = new UpdateWorkItemUseCase(
+            TestDependencyFactory.CreateCurrentUserService(
+                dbContext,
+                new CurrentUser("admin-1", "admin-1", "Admin One", AppRole.Admin)),
+            new UpdateWorkItemRequestValidator(),
+            TestDependencyFactory.CreateWorkItemCommandService(dbContext));
+
+        var action = async () => await useCase.ExecuteAsync(
+            Guid.NewGuid(),
+            new UpdateWorkItemRequest
+            {
+                Title = "New Title",
+                Description = new string('D', 2001),
+            },
+            CancellationToken.None);
+
+        await Assert.ThrowsAsync<AppValidationException>(action);
+    }
+
+    [Fact]
     public async Task UpdateWorkItem_WhenWorkItemDoesNotExist_ThrowsNotFound()
     {
         await using var dbContext = TestDependencyFactory.CreateDbContext();

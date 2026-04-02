@@ -238,6 +238,21 @@ Then
   不建立任何資料
 ```
 
+### B-ADMIN-002A 建立 Work Item 時欄位超過長度限制
+
+```text
+Given
+  目前請求具有 Admin 角色
+  且：
+    - title 超過 200 字
+    - 或 description 超過 2000 字
+When
+  管理者呼叫建立 API
+Then
+  API 回傳 validation error
+  不建立任何資料
+```
+
 ### B-ADMIN-003 更新 Work Item
 
 ```text
@@ -263,6 +278,20 @@ When
   管理者呼叫更新 API
 Then
   API 回傳 not found
+```
+
+### B-ADMIN-004A 更新 Work Item 時欄位超過長度限制
+
+```text
+Given
+  目前請求具有 Admin 角色
+  且：
+    - title 超過 200 字
+    - 或 description 超過 2000 字
+When
+  管理者呼叫更新 API
+Then
+  API 回傳 validation error
 ```
 
 ### B-ADMIN-005 刪除 Work Item

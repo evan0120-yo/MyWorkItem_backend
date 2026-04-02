@@ -47,6 +47,22 @@
 - Controller 細碎單元測試
 - 純框架行為測試
 
+### 目前測試 provider 決策
+
+- FlowTests / ServiceTests / AuthTests 目前透過 `TestDependencyFactory` 建立 EF Core InMemory DbContext。
+- 這個決策的目的：
+  - 讓 UseCase / Service / Auth 測試回饋更快
+  - 降低日常測試對本機 PostgreSQL 狀態的耦合
+  - 先把流程順序、權限邊界、錯誤出口保住
+- 這個決策不代表 PostgreSQL 可以不測。
+- 目前尚未覆蓋的面向：
+  - Npgsql provider 行為
+  - SQL translation / query shape
+  - FK / constraint / transaction / migration
+- 後續需補：
+  - Repository / DbContext 的 PostgreSQL integration tests
+  - 視需要再補 API 層級 integration tests
+
 ## 測試專案結構
 
 ```text
@@ -160,6 +176,8 @@ Backend/MyWorkItem.Tests
 │
 ├─ Admin 可成功建立
 ├─ title 為空時回傳 validation error
+├─ title 超過 200 字時回傳 validation error
+├─ description 超過 2000 字時回傳 validation error
 ├─ createdAt / updatedAt 正確寫入
 └─ User 角色不可建立
 ```
@@ -172,6 +190,8 @@ Backend/MyWorkItem.Tests
 ├─ Admin 可成功更新 title / description
 ├─ updatedAt 需更新
 ├─ title 為空時回傳 validation error
+├─ title 超過 200 字時回傳 validation error
+├─ description 超過 2000 字時回傳 validation error
 ├─ 目標不存在時回傳 not found
 └─ User 角色不可更新
 ```

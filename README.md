@@ -112,6 +112,21 @@ X-Mock-User-Name: user-1
 X-Mock-Role: User
 ```
 
+## 本機前後端聯調 CORS
+
+API 目前已允許：
+
+- http://localhost:5173
+- http://127.0.0.1:5173
+
+原因是前端開發站與 API 不同 origin，而且 request 會帶：
+
+- X-Mock-User-Id
+- X-Mock-User-Name
+- X-Mock-Role
+
+瀏覽器會先送 CORS preflight，所以 API 端必須明確放行本機開發來源與 request headers。
+
 ## 啟動前準備
 
 1. 確認本機已安裝 .NET 8 SDK
@@ -153,11 +168,17 @@ cd Backend
 dotnet test .\MyWorkItem.sln
 ```
 
-目前已加入 35 個測試，包含：
+目前已加入 40 個測試，包含：
 
 - UseCase flow tests
 - Auth tests
 - Service tests
+
+目前這批 `dotnet test` 會透過 EF Core InMemory provider 跑，不直接連 PostgreSQL。
+
+原因是先保住 UseCase / Service / Auth 的快速回饋，並降低日常測試對本機資料庫狀態的耦合。
+
+這不代表 PostgreSQL 可以不測；Repository / DbContext / API 層的 PostgreSQL integration tests 仍需另外補。
 
 ## 下一步建議
 

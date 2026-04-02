@@ -17,7 +17,17 @@
   - Phase 1：Mock 權限，先滿足核心功能
   - Phase 2：若有時間，再補 JWT
 - 測試方向：先做後端流程測試
+- 測試實作：
+  - FlowTests / ServiceTests / AuthTests 目前先用 EF Core InMemory provider 跑
+  - PostgreSQL integration tests 仍要另外補
 - 架構方向：一般三層架構 + UseCase 層
+- 本機前後端聯調：
+  - API 需允許 `http://localhost:5173` 與 `http://127.0.0.1:5173` 的 CORS
+  - request 會帶 `X-Mock-*` headers，所以必須能通過 browser preflight
+- admin create API 回 `201 Created`
+- create / update request validation 已對齊 DB 長度限制：
+  - `Title <= 200`
+  - `Description <= 2000`
 
 ## 目前共識
 
@@ -34,6 +44,20 @@
 - SQL Server 目前也有 vector data type，但主要適用於 SQL Server 2025 Preview / Azure SQL 相關環境，不先假設本機舊版 SQL Server 可直接使用
 - 不先做完整正式權限系統，先以 mock 權限完成主要流程
 - 若時間允許，再進入 Phase 2 補 JWT 驗證
+- 測試先採 InMemory provider：
+  - 理由是先保住 UseCase / Service / Auth 測試的回饋速度
+  - 理由是降低日常測試對本機 PostgreSQL 狀態的耦合
+  - 目前主要先驗證流程順序、權限邊界、錯誤出口
+- 這不代表 PostgreSQL 可以不測：
+  - Npgsql provider 行為仍需測
+  - SQL translation / FK / constraint / transaction / migration 仍需另外補 integration tests
+- confirm 流程目前已把 user upsert 與 status 寫入收斂成同一次 `SaveChanges`
+  - 對 relational provider 來說會落在同一個 EF Core transaction
+  - 但仍未補 PostgreSQL integration tests 驗證 provider 實際行為
+- 本機前後端聯調要補 CORS：
+  - 因為 Frontend `http://localhost:5173` 與 Backend `http://localhost:5032` 是跨 origin
+  - 前端 request 會帶 `X-Mock-User-Id` / `X-Mock-User-Name` / `X-Mock-Role`
+  - 瀏覽器會先送 preflight，所以 API 端必須明確放行來源、method 與 headers
 - UseCase 層的理由：
   - 更貼近 PRD 與流程圖
   - 單元 / 流程測試更容易直接對應 UseCase
